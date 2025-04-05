@@ -16,6 +16,9 @@ import {
 } from "@mui/icons-material"
 import { deepPurple, blueGrey, teal } from '@mui/material/colors'
 
+import HelpIcon from "@mui/icons-material/Help"
+import Dialog from '@mui/material/Dialog'
+
 // Import Firebase
 import { firestore } from "../firebase"
 import { collection, getDocs, query } from "firebase/firestore"
@@ -40,6 +43,56 @@ const theme = createTheme({
   }
 })
 
+function HelpDialog({ open, onClose }) {
+  setHelpOpen(true);
+  return (
+    <Dialog open={open} onClose={onClose}>
+      <Box sx={{ p: 3, maxWidth: 400 }}>
+        <Typography variant="h4" gutterBottom>
+          How to Use This Page
+        </Typography>
+
+        <Typography variant="body1" paragraph>
+          Use the checkboxes to select which phone numbers you'd like to save.
+        </Typography>
+
+        <Typography variant = "h6">
+          <strong>For iOS:</strong>
+        </Typography>
+          
+        <Typography variant="body1" paragraph>
+          <ol style={{ paddingLeft: "1.2em" }}>
+            <li>Click <strong>Add to Contacts</strong> below</li>
+            <li>Tap the download icon in the top right corner</li>
+            <li>Select <strong>Contacts</strong> from the options</li>
+            <li>Choose <strong>Add All Contacts</strong></li>
+            <li>When prompted, select <strong>Create New Contacts</strong></li>
+          </ol>
+        </Typography>
+
+        <Typography variant = "h6">
+          <strong>For Android:</strong>
+        </Typography>
+
+        <Typography variant="body1" paragraph>
+          <ol style={{ paddingLeft: "1.2em" }}>
+            <li>Click <strong>Add to Contacts</strong> below</li>
+            <li>When prompted, select <strong>Download</strong></li>
+            <li>After the download completes, tap <strong>Open File</strong></li>
+            <li>Click <strong>Import</strong>, choose a destination, and confirm by selecting <strong>"Import"</strong> again</li>
+          </ol>
+        </Typography>
+
+        <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
+          <Button onClick={onClose} variant="contained">
+            Close
+          </Button>
+        </Box>
+      </Box>
+    </Dialog>
+  );
+}
+
 export default function ContactsPage() {
   const [contacts, setContacts] = useState([])
   const [snackbar, setSnackbar] = useState({
@@ -47,6 +100,8 @@ export default function ContactsPage() {
     message: "",
     severity: "info"
   })
+  const [helpOpen, setHelpOpen] = useState(false)
+
   
   // Get a random color for each contact's avatar
   const getAvatarColor = (name) => {
@@ -180,15 +235,36 @@ export default function ContactsPage() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
+      <HelpDialog open={helpOpen} onClose={() => setHelpOpen(false)} />
       <Box>
         <Container maxWidth="md">
+          {/* Help Button - Added here */}
+          <Box sx={{ position: 'absolute', top: 20, right: 20, zIndex: 999 }}>
+            <Button
+              variant="contained"
+              onClick={() => setHelpOpen(true)}
+              sx={{
+                minWidth: 0,
+                width: 40,
+                height: 40,
+                padding: 0,
+                borderRadius: "50%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <HelpIcon />
+            </Button>
+          </Box>
+
           <Card >
             {/* Header */}
             <Box
               sx={{
                 p: 4,
                 pb: 2,
-                background: `linear-gradient(90deg,rgb(0, 103, 71) 0%,rgb(247, 184, 0) 50%, #fdf6e3 100%)`,
+                background: `linear-gradient(90deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
                 color: "white",
                 borderTopLeftRadius: theme.shape.borderRadius,
                 borderTopRightRadius: theme.shape.borderRadius,
