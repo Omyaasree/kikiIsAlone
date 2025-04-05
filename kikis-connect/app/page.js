@@ -23,7 +23,7 @@ import { collection, getDocs, query } from "firebase/firestore";
 // Create a theme instance
 const theme = createTheme({
   palette: {
-    mode: "dark",
+    mode: "light",
     primary: {
       main: "#000000",
     },
