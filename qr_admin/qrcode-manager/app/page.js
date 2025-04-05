@@ -17,12 +17,13 @@ import {
 } from 'firebase/firestore';
 
 const colors = {
-  dark: "#F7B800",          // USF Green
+  dark: "#006747",          // USF Green
   light: "#FFFFFF",         // White
-  accent: "#006747",        // USF Gold
+  accent: "#F7B800",        // USF Gold
   finder_dark: "#F7B800",   // USF Gold
   finder_light: "#FFFFFF",  // White
 };
+
 
 const modalStyle = {
   position: 'absolute',
