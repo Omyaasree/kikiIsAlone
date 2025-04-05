@@ -44,8 +44,9 @@ const theme = createTheme({
 })
 
 function HelpDialog({ open, onClose }) {
+  
   setHelpOpen(true);
-  return (
+    return (
     <Dialog open={open} onClose={onClose}>
       <Box sx={{ p: 3, maxWidth: 400 }}>
         <Typography variant="h4" gutterBottom>
