@@ -240,30 +240,29 @@ export default function ContactsPage() {
     )))
   }
   
-  const addToPhoneContacts = async () => {
-    const selectedContacts = contacts.filter(contact => contact.checked);
-  
-    if (selectedContacts.length === 0) {
-      setSnackbar({
-        open: true,
-        message: "No contacts selected.",
-        severity: "warning"
-      });
-      return;
-    }
-  
+    const addToPhoneContacts = async (contact) => {
+    // check whether the browser supports contacts api
     if ("contacts" in navigator && "ContactsManager" in window) {
       try {
-        // Even though writing is not supported, fallback anyway
-        console.log("Contact Picker API is supported, but writing isn't. Falling back.");
-        createVCardFile(selectedContacts);
+        const props = ["name", "tel"]
+        const opts = { multiple: true }
+        
+        const contacts = await navigator.contacts.select(props)//, opts)
+        console.log("Selected contacts:", contacts)
+        
+        
+        // Note: The current Contact API is primarily for reading contacts
+        // Adding contacts is not fully supported across browsers
+        
+        
+        // For demonstration, we'll create a vCard file for download
+        createVCardFile(contact)
       } catch (error) {
-        console.error("Error with Contact Picker API:", error);
-        createVCardFile(selectedContacts);
+        createVCardFile(contact)
       }
     } else {
-      // Fallback to vCard creation
-      createVCardFile(selectedContacts);
+      // Fallback to vCard download for unsupported browsers
+      createVCardFile(contact)
     }
   }
   
