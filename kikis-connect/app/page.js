@@ -290,11 +290,11 @@ export default function ContactsPage() {
             {/* Contacts List */}
             <CardContent sx={{ px: 0 }}>
               {contacts.length === 0 ? (
-                <Box 
-                  sx={{ 
-                    py: 6, 
-                    display: "flex", 
-                    flexDirection: "column", 
+                <Box
+                  sx={{
+                    py: 6,
+                    display: "flex",
+                    flexDirection: "column",
                     alignItems: "center",
                     gap: 2
                   }}
@@ -305,37 +305,43 @@ export default function ContactsPage() {
                   </Typography>
                 </Box>
               ) : (
-                <List sx={{ width: '100%' }}>
+                <Stack
+                  width="100%"
+                  maxHeight="500px"
+                  spacing={0}
+                  overflow="auto"
+                  divider={<Box sx={{ borderBottom: `1px solid ${theme.palette.divider}` }} />}
+                >
                   {contacts.map((contact) => (
                     <Box key={contact.id}>
-                      <ListItem 
-                        button 
+                      <ListItem
+                        button
                         onClick={() => handleCheckboxChange(contact.id)}
-                        sx={{ 
+                        sx={{
                           py: 2,
                           px: 3,
                           transition: "all 0.2s",
-                          "&:hover": { 
-                            bgcolor: contact.checked ? 'rgba(103, 58, 183, 0.05)' : 'rgba(0, 0, 0, 0.02)' 
+                          "&:hover": {
+                            bgcolor: contact.checked ? 'rgba(103, 58, 183, 0.05)' : 'rgba(0, 0, 0, 0.02)'
                           },
                           bgcolor: contact.checked ? 'rgba(103, 58, 183, 0.02)' : 'transparent'
                         }}
                       >
                         <ListItemIcon>
-                          <Checkbox 
-                            edge="start" 
-                            checked={contact.checked} 
-                            sx={{ 
-                              '& .MuiSvgIcon-root': { 
+                          <Checkbox
+                            edge="start"
+                            checked={contact.checked}
+                            sx={{
+                              '& .MuiSvgIcon-root': {
                                 fontSize: 24,
                                 color: contact.checked ? blueGrey[700] : undefined
-                              } 
+                              }
                             }}
                           />
                         </ListItemIcon>
-                        
-                        <Avatar 
-                          sx={{ 
+
+                        <Avatar
+                          sx={{
                             bgcolor: getAvatarColor(contact.name),
                             mr: 2,
                             width: 40,
@@ -346,34 +352,35 @@ export default function ContactsPage() {
                         >
                           {getInitials(contact.name)}
                         </Avatar>
-                        
-                        <ListItemText 
+
+                        <ListItemText
                           primary={
-                            <Typography 
-                              variant="body1" 
-                              sx={{ 
+                            <Typography
+                              variant="body1"
+                              sx={{
                                 fontWeight: contact.checked ? 600 : 500,
                                 color: contact.checked ? blueGrey[900] : 'text.primary'
                               }}
                             >
                               {contact.name}
                             </Typography>
-                          } 
+                          }
                           secondary={
                             <Box display="flex" alignItems="center" gap={0.5}>
                               <Typography variant="body2" color="text.secondary">
                                 {contact.phone}
                               </Typography>
                             </Box>
-                          } 
+                          }
                         />
                       </ListItem>
                       <Divider variant="inset" component="li" />
                     </Box>
                   ))}
-                </List>
+                </Stack>
               )}
             </CardContent>
+
             
             {/* Action Footer */}
             <Box sx={{ px: 3, mt: 2 }}>
