@@ -282,8 +282,6 @@ export default function ContactsPage() {
     document.body.removeChild(link)
   }
   
-  
-  
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
