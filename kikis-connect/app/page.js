@@ -147,7 +147,7 @@ export default function ContactsPage() {
         gap={3}
       >
         <Typography variant="h3" sx={{ color: colors.dark, fontWeight: 'bold', textAlign: 'center' }}>
-          Contacts
+          Admin
         </Typography>
 
         <TextField
