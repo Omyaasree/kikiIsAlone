@@ -44,9 +44,7 @@ const theme = createTheme({
 })
 
 function HelpDialog({ open, onClose }) {
-  
-  setHelpOpen(true);
-    return (
+  return (
     <Dialog open={open} onClose={onClose}>
       <Box sx={{ p: 3, maxWidth: 400 }}>
         <Typography variant="h4" gutterBottom>
@@ -124,6 +122,7 @@ export default function ContactsPage() {
   
   // Fetch contacts from Firebase when component mounts
   useEffect(() => {
+    setHelpOpen(true);
     async function fetchContacts() {
       try {
         const contactsRef = collection(firestore, 'contacts')
