@@ -240,31 +240,45 @@ export default function ContactsPage() {
     )))
   }
   
-    const addToPhoneContacts = async (contact) => {
-    // check whether the browser supports contacts api
+  const addToPhoneContacts = async (selectedContacts) => {
+    if (!selectedContacts || selectedContacts.length === 0) {
+      setSnackbar({
+        open: true,
+        message: "No contacts selected.",
+        severity: "warning"
+      })
+      return
+    }
+  
+    // Try using Contacts API (not yet supported for writing on most browsers)
     if ("contacts" in navigator && "ContactsManager" in window) {
       try {
         const props = ["name", "tel"]
-        const opts = { multiple: true }
-        
-        const contacts = await navigator.contacts.select(props)//, opts)
-        console.log("Selected contacts:", contacts)
-        
-        
-        // Note: The current Contact API is primarily for reading contacts
-        // Adding contacts is not fully supported across browsers
-        
-        
-        // For demonstration, we'll create a vCard file for download
-        createVCardFile(contact)
+        await navigator.contacts.select(props)  // mostly for reading
       } catch (error) {
-        createVCardFile(contact)
+        console.log("Contacts API error:", error)
       }
-    } else {
-      // Fallback to vCard download for unsupported browsers
-      createVCardFile(contact)
     }
+  
+    // Fallback: Generate a single vCard with all selected contacts
+    const vCards = selectedContacts.map((contact) => {
+      return `BEGIN:VCARD
+  VERSION:3.0
+  FN:${contact.name}
+  TEL;TYPE=CELL:${contact.rawPhone}
+  END:VCARD`
+    }).join("\n")
+  
+    const blob = new Blob([vCards], { type: "text/vcard" })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement("a")
+    link.href = url
+    link.download = "contacts.vcf"
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
   }
+  
   
   
   return (
@@ -293,8 +307,8 @@ export default function ContactsPage() {
           variant="contained"
           fullWidth
           startIcon={<AddCircleIcon />}
-          onClick={addToPhoneContacts}
-        >
+          onClick={() => addToPhoneContacts(contacts.filter(c => c.checked))}
+          >
           Add to Contacts
         </Button>
 
