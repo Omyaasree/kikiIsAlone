@@ -17,10 +17,11 @@ import {
 } from 'firebase/firestore';
 
 const colors = {
-  dark: "#2c3e50",
-  light: "#fdf6e3",
-  finder_dark: "#e74c3c",
-  finder_light: "#fdf6e3",
+  dark: "#006747",          // USF Green
+  light: "#FFFFFF",         // White
+  accent: "#F7B800",        // USF Gold
+  finder_dark: "#F7B800",   // USF Gold
+  finder_light: "#FFFFFF",  // White
 };
 
 const modalStyle = {

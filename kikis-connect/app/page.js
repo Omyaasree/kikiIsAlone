@@ -188,7 +188,7 @@ export default function ContactsPage() {
               sx={{
                 p: 4,
                 pb: 2,
-                background: `linear-gradient(90deg, #2c3e50 0%,rgb(171, 53, 39) 50%, #fdf6e3 100%)`,
+                background: `linear-gradient(90deg,rgb(40, 53, 106) 0%,rgb(171, 53, 39) 50%, #fdf6e3 100%)`,
                 color: "white",
                 borderTopLeftRadius: theme.shape.borderRadius,
                 borderTopRightRadius: theme.shape.borderRadius,
