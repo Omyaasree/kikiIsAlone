@@ -262,12 +262,15 @@ export default function ContactsPage() {
   
     // Fallback: Generate a single vCard with all selected contacts
     const vCards = selectedContacts.map((contact) => {
-      return `BEGIN:VCARD
-  VERSION:3.0
-  FN:${contact.name}
-  TEL;TYPE=CELL:${contact.rawPhone}
-  END:VCARD`
-    }).join("\n")
+      return [
+        "BEGIN:VCARD",
+        "VERSION:3.0",
+        `FN:${contact.name}`,
+        `TEL;TYPE=CELL:${contact.rawPhone}`,
+        "END:VCARD"
+      ].join("\r\n");
+    }).join("\r\n");
+    
   
     const blob = new Blob([vCards], { type: "text/vcard" })
     const url = URL.createObjectURL(blob)
