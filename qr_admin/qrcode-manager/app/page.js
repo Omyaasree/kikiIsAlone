@@ -17,9 +17,9 @@ import {
 } from 'firebase/firestore';
 
 const colors = {
-  dark: "#006747",          // USF Green
+  dark: "#F7B800",          // USF Green
   light: "#FFFFFF",         // White
-  accent: "#F7B800",        // USF Gold
+  accent: "#006747",        // USF Gold
   finder_dark: "#F7B800",   // USF Gold
   finder_light: "#FFFFFF",  // White
 };
