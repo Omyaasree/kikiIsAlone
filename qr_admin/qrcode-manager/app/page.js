@@ -1,12 +1,27 @@
-"use client"
-
-// https://adminkiki.vercel.app/ this is the URL
+"use client";
 
 import { useState, useEffect } from 'react';
-import { Box, Stack, Typography, Button, Modal, TextField, Container, Paper, InputAdornment, IconButton, Fab } from '@mui/material';
-import { Search as SearchIcon, Edit as EditIcon, Delete as DeleteIcon, Add as AddIcon } from '@mui/icons-material';
+import {
+  Box, Stack, Typography, Button, Modal, TextField,
+  Container, Paper, InputAdornment, IconButton, Fab
+} from '@mui/material';
+import {
+  Search as SearchIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  Add as AddIcon
+} from '@mui/icons-material';
 import { firestore } from '../firebase';
-import { collection, doc, getDocs, setDoc, deleteDoc, getDoc, query } from 'firebase/firestore';
+import {
+  collection, doc, getDocs, setDoc, deleteDoc, query
+} from 'firebase/firestore';
+
+const colors = {
+  dark: "#2c3e50",
+  light: "#fdf6e3",
+  finder_dark: "#e74c3c",
+  finder_light: "#fdf6e3",
+};
 
 const modalStyle = {
   position: 'absolute',
@@ -14,14 +29,15 @@ const modalStyle = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: 400,
-  bgcolor: 'white',
-  border: '2px solid #ddd',
+  bgcolor: colors.light,
+  border: `2px solid ${colors.dark}`,
   boxShadow: 24,
   p: 4,
   display: 'flex',
   flexDirection: 'column',
   gap: 3,
-  borderRadius: '8px'
+  borderRadius: '8px',
+  color: colors.dark
 };
 
 export default function ContactsPage() {
@@ -33,9 +49,8 @@ export default function ContactsPage() {
   const [phone, setPhone] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
-  const [phoneError, setPhoneError] = useState('');  // State for phone number error
+  const [phoneError, setPhoneError] = useState('');
 
-  // Fetch contacts from Firebase
   useEffect(() => {
     updateContacts();
   }, []);
@@ -46,9 +61,9 @@ export default function ContactsPage() {
       const docs = await getDocs(snapshot);
       const contactsList = [];
       docs.forEach((document) => {
-        contactsList.push({ 
-          name: document.id, 
-          phone: document.data().phone 
+        contactsList.push({
+          name: document.id,
+          phone: document.data().phone
         });
       });
       setContacts(contactsList);
@@ -57,20 +72,18 @@ export default function ContactsPage() {
     }
   };
 
-  const filteredContacts = contacts.filter(contact => 
+  const filteredContacts = contacts.filter(contact =>
     contact.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleOpen = (contact = null) => {
     if (contact) {
-      // Edit mode
       setEditMode(true);
       setCurrentContactName(contact.name);
       setName(contact.name);
       setPhone(contact.phone);
       setPhoneError('');
     } else {
-      // Add mode
       setEditMode(false);
       setCurrentContactName(null);
       setName('');
@@ -91,28 +104,20 @@ export default function ContactsPage() {
   };
 
   const saveContact = async () => {
-    // Remove non-numeric characters
     const rawPhone = phone.replace(/\D/g, '');
 
-    // Check if the phone number is numeric and has exactly 10 digits
     if (!/^\d{10}$/.test(rawPhone)) {
       setPhoneError('Phone number must be a valid 10-digit number.');
       return;
     }
 
-    // Format the phone number as (XXX) XXX-XXXX
     const formattedPhoneNumber = `(${rawPhone.slice(0, 3)}) ${rawPhone.slice(3, 6)}-${rawPhone.slice(6)}`;
 
     try {
       if (editMode && currentContactName !== name) {
-        // If name changed, delete old doc and create new one
         await deleteDoc(doc(firestore, "contacts", currentContactName));
         await setDoc(doc(firestore, "contacts", name), { phone: formattedPhoneNumber });
-      } else if (editMode) {
-        // Just update existing contact
-        await setDoc(doc(firestore, "contacts", name), { phone: formattedPhoneNumber });
       } else {
-        // Add new contact
         await setDoc(doc(firestore, "contacts", name), { phone: formattedPhoneNumber });
       }
       updateContacts();
@@ -133,61 +138,54 @@ export default function ContactsPage() {
   };
 
   return (
-    <Container maxWidth="md">
+    <Container maxWidth="md" sx={{ bgcolor: colors.light, py: 4, minHeight: '100vh' }}>
       <Box
         width="100%"
         display="flex"
         flexDirection="column"
         alignItems="center"
-        my={4}
         gap={3}
       >
-        {/* Title */}
-        <Typography variant="h3" color="#333" textAlign="center" fontWeight="bold">
-          Contacts
+        <Typography variant="h3" sx={{ color: colors.dark, fontWeight: 'bold', textAlign: 'center' }}>
+          Admin
         </Typography>
 
-        {/* Search Bar */}
         <TextField
           label="Search contacts"
           variant="outlined"
           fullWidth
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
+          sx={{ bgcolor: colors.finder_light }}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <SearchIcon />
+                <SearchIcon sx={{ color: colors.dark }} />
               </InputAdornment>
             ),
           }}
         />
 
-        {/* Contacts List */}
-        <Paper 
+        <Paper
           elevation={3}
-          sx={{ 
-            width: '100%', 
-            borderRadius: '8px', 
+          sx={{
+            width: '100%',
+            borderRadius: '8px',
             overflow: 'hidden',
-            border: '1px solid #eee'
+            border: `1px solid ${colors.dark}`,
+            bgcolor: colors.light
           }}
         >
-          <Stack 
-            width="100%" 
-            maxHeight="500px" 
-            spacing={0} 
+          <Stack
+            width="100%"
+            maxHeight="500px"
+            spacing={0}
             overflow="auto"
-            divider={<Box sx={{ borderBottom: '1px solid #eee', width: '100%' }} />}
+            divider={<Box sx={{ borderBottom: `1px solid ${colors.dark}` }} />}
           >
             {filteredContacts.length === 0 ? (
-              <Box 
-                py={4} 
-                display="flex" 
-                justifyContent="center"
-                alignItems="center"
-              >
-                <Typography variant="body1" color="#666">
+              <Box py={4} display="flex" justifyContent="center" alignItems="center">
+                <Typography variant="body1" sx={{ color: colors.dark }}>
                   {searchQuery ? 'No contacts match your search.' : 'No contacts found.'}
                 </Typography>
               </Box>
@@ -200,28 +198,24 @@ export default function ContactsPage() {
                   display="flex"
                   justifyContent="space-between"
                   alignItems="center"
-                  bgcolor="white"
-                  sx={{ '&:hover': { bgcolor: '#f8f9fa' } }}
+                  sx={{
+                    bgcolor: colors.light,
+                    '&:hover': { bgcolor: '#f0ece4' }
+                  }}
                 >
                   <Box>
-                    <Typography variant="h6" color="#333" fontWeight="500">
+                    <Typography variant="h6" sx={{ color: colors.dark, fontWeight: 500 }}>
                       {contact.name}
                     </Typography>
-                    <Typography variant="body1" color="#666">
+                    <Typography variant="body1" sx={{ color: '#666' }}>
                       {contact.phone}
                     </Typography>
                   </Box>
                   <Stack direction="row" spacing={1}>
-                    <IconButton 
-                      color="primary"
-                      onClick={() => handleOpen(contact)}
-                    >
+                    <IconButton color="primary" onClick={() => handleOpen(contact)}>
                       <EditIcon />
                     </IconButton>
-                    <IconButton 
-                      color="error"
-                      onClick={() => openDeleteConfirmation(contact.name)}
-                    >
+                    <IconButton sx={{ color: colors.finder_dark }} onClick={() => openDeleteConfirmation(contact.name)}>
                       <DeleteIcon />
                     </IconButton>
                   </Stack>
@@ -231,88 +225,71 @@ export default function ContactsPage() {
           </Stack>
         </Paper>
       </Box>
-      
-      {/* Add Button (floating in bottom right) */}
-      <Fab 
-        color="primary" 
+
+      <Fab
+        sx={{
+          position: 'fixed',
+          bottom: 30,
+          right: 30,
+          bgcolor: colors.finder_dark,
+          color: colors.light,
+          '&:hover': { bgcolor: '#c0392b' }
+        }}
         aria-label="add"
         onClick={() => handleOpen()}
-        sx={{ 
-          position: 'fixed', 
-          bottom: 30, 
-          right: 30 
-        }}
       >
         <AddIcon />
       </Fab>
-      
+
       {/* Add/Edit Modal */}
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="contact-modal-title"
-      >
+      <Modal open={open} onClose={handleClose}>
         <Box sx={modalStyle}>
-          <Typography id="contact-modal-title" variant="h6" component="h2">
+          <Typography variant="h6">
             {editMode ? 'Edit Contact' : 'Add New Contact'}
           </Typography>
-          
           <TextField
             label="Name"
             variant="outlined"
             fullWidth
             value={name}
             onChange={(e) => setName(e.target.value)}
-            sx={{ mb: 2 }}
           />
-          
           <TextField
             label="Phone Number"
             variant="outlined"
             fullWidth
-            type="number"
+            type="text"
             value={phone}
             onChange={(e) => {
               setPhone(e.target.value);
-              setPhoneError('');  // Clear error while typing
+              setPhoneError('');
             }}
             error={!!phoneError}
             helperText={phoneError}
           />
-          
-          <Stack direction="row" spacing={2} justifyContent="flex-end" mt={2}>
+          <Stack direction="row" spacing={2} justifyContent="flex-end">
             <Button variant="outlined" onClick={handleClose}>
               Cancel
             </Button>
-            <Button 
-              variant="contained" 
-              color="primary"
-              onClick={saveContact}
-            >
+            <Button variant="contained" sx={{ bgcolor: colors.dark }} onClick={saveContact}>
               {editMode ? 'Update' : 'Add'}
             </Button>
           </Stack>
         </Box>
       </Modal>
-      
-      {/* Delete Confirmation Modal */}
-      <Modal
-        open={deleteConfirmOpen}
-        onClose={handleClose}
-        aria-labelledby="delete-modal-title"
-      >
+
+      {/* Delete Modal */}
+      <Modal open={deleteConfirmOpen} onClose={handleClose}>
         <Box sx={modalStyle}>
-          <Typography id="delete-modal-title" variant="h6" component="h2">
-            Delete Contact
-          </Typography>
+          <Typography variant="h6">Delete Contact</Typography>
           <Typography variant="body1">
             Are you sure you want to delete this contact? This action cannot be undone.
           </Typography>
-          <Stack direction="row" spacing={2} justifyContent="flex-end" mt={2}>
+          <Stack direction="row" spacing={2} justifyContent="flex-end">
             <Button variant="outlined" onClick={handleClose}>
               Cancel
             </Button>
-            <Button variant="contained" color="error" onClick={deleteContact}>
+            <Button variant="contained" sx={{ bgcolor: colors.finder_dark }} onClick={deleteContact}>
               Delete
             </Button>
           </Stack>
