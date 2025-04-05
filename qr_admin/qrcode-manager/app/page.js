@@ -173,7 +173,7 @@ export default function ContactsPage() {
             borderRadius: '8px',
             overflow: 'hidden',
             border: `1px solid ${colors.dark}`,
-            bgcolor: colors.light
+            bgcolor: colors.dark
           }}
         >
           <Stack
