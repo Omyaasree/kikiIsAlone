@@ -2,28 +2,38 @@
 
 import { useState, useEffect } from 'react';
 import {
-  Box, Stack, Typography, Button, Modal, TextField,
-  Container, Paper, InputAdornment, IconButton, Fab
+  Box, AppBar, Toolbar, Stack, Typography, Button, Modal, TextField, Container, Paper,
+  InputAdornment, IconButton, Fab, createTheme
 } from '@mui/material';
 import {
-  Search as SearchIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-  Add as AddIcon
+  Search as SearchIcon, Edit as EditIcon, Delete as DeleteIcon, Add as AddIcon
 } from '@mui/icons-material';
 import { firestore } from '../firebase';
 import {
   collection, doc, getDocs, setDoc, deleteDoc, query
 } from 'firebase/firestore';
+import { amber, blueGrey, teal } from '@mui/material/colors'
 
-const colors = {
-  dark: "#006747",          // USF Green
-  light: "#FFFFFF",         // White
-  accent: "#F7B800",        // USF Gold
-  finder_dark: "#F7B800",   // USF Gold
-  finder_light: "#FFFFFF",  // White
-};
 
+// Create a custom theme
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: teal[600],
+      light: teal[400],
+      dark: teal[800]
+    },
+    secondary: {
+      main: amber[700],
+      light: amber[500],
+      dark: amber[900]
+    },
+    background: {
+      default: blueGrey[50],
+      paper: '#ffffff'
+    }
+  }
+})
 
 const modalStyle = {
   position: 'absolute',
@@ -31,15 +41,14 @@ const modalStyle = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: 400,
-  bgcolor: colors.light,
-  border: `2px solid ${colors.dark}`,
+  bgcolor: 'white',
+  border: '2px solid #ddd',
   boxShadow: 24,
   p: 4,
   display: 'flex',
   flexDirection: 'column',
   gap: 3,
-  borderRadius: '8px',
-  color: colors.dark
+  borderRadius: '8px'
 };
 
 export default function ContactsPage() {
@@ -140,127 +149,148 @@ export default function ContactsPage() {
   };
 
   return (
-    <Container maxWidth="md" sx={{ bgcolor: colors.light, py: 4, minHeight: '100vh' }}>
-      <Box
-        width="100%"
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        gap={3}
+    <>
+    <AppBar
+        position="static"
+        sx={{
+          background: `linear-gradient(90deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
+          width: '100%',
+          height: '100px', // Adjust this value to increase the height
+          display: 'flex',
+          justifyContent: 'center', // Centers the title horizontally
+          alignItems: 'center', // Centers the title vertically
+        }}
       >
-        <Typography variant="h3" sx={{ color: colors.dark, fontWeight: 'bold', textAlign: 'center' }}>
-          Admin
+        <Typography variant="h4" sx={{ color: 'white', fontWeight: 'bold' }}>
+          Admin Panel
         </Typography>
+      </AppBar>
 
+    <Container maxWidth="md">
+      
+
+      {/* Search Bar */}
+      <Box display="flex" flexDirection="column" alignItems="center" my={5} gap={5}>
         <TextField
-          label="Search contacts"
+          label="Search"
           variant="outlined"
           fullWidth
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          sx={{ bgcolor: colors.finder_light }}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <SearchIcon sx={{ color: colors.dark }} />
+                <SearchIcon sx={{ color: searchQuery ? theme.palette.primary.main : 'inherit' }} />
               </InputAdornment>
             ),
           }}
-        />
-
-        <Paper
-          elevation={3}
           sx={{
-            width: '100%',
-            borderRadius: '8px',
-            overflow: 'hidden',
-            border: `1px solid ${colors.dark}`,
-            bgcolor: colors.dark
+            '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              borderColor: theme.palette.primary.main,
+            }
           }}
-        >
-          <Stack
-            width="100%"
-            maxHeight="500px"
-            spacing={0}
-            overflow="auto"
-            divider={<Box sx={{ borderBottom: `1px solid ${colors.dark}` }} />}
-          >
-            {filteredContacts.length === 0 ? (
-              <Box py={4} display="flex" justifyContent="center" alignItems="center">
-                <Typography variant="body1" sx={{ color: colors.dark }}>
-                  {searchQuery ? 'No contacts match your search.' : 'No contacts found.'}
-                </Typography>
-              </Box>
-            ) : (
-              filteredContacts.map((contact) => (
-                <Box
-                  key={contact.name}
-                  py={3}
-                  px={4}
-                  display="flex"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  sx={{
-                    bgcolor: colors.light,
-                    '&:hover': { bgcolor: '#f0ece4' }
-                  }}
-                >
-                  <Box>
-                    <Typography variant="h6" sx={{ color: colors.dark, fontWeight: 500 }}>
-                      {contact.name}
-                    </Typography>
-                    <Typography variant="body1" sx={{ color: '#666' }}>
-                      {contact.phone}
-                    </Typography>
-                  </Box>
-                  <Stack direction="row" spacing={1}>
-                    <IconButton color="primary" onClick={() => handleOpen(contact)}>
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton sx={{ color: colors.finder_dark }} onClick={() => openDeleteConfirmation(contact.name)}>
-                      <DeleteIcon />
-                    </IconButton>
-                  </Stack>
-                </Box>
-              ))
-            )}
-          </Stack>
-        </Paper>
+        />
       </Box>
 
+      {/* Contacts List */}
+      <Paper
+        elevation={2}
+        sx={{
+          width: '100%',
+          borderRadius: '12px',
+          overflow: 'hidden',
+          border: '1px solid #ddd',
+          backgroundColor: '#fafafa'
+        }}
+      >
+        <Stack
+          maxHeight="500px"
+          spacing={0}
+          overflow="auto"
+          divider={<Box sx={{ borderBottom: '1px solid #eee' }} />}
+        >
+          {filteredContacts.length === 0 ? (
+            <Box py={5} textAlign="center">
+              <Typography color="textSecondary">
+                {searchQuery ? 'No contacts match your search.' : 'No contacts yet.'}
+              </Typography>
+            </Box>
+          ) : (
+            filteredContacts.map((contact) => (
+              <Box
+                key={contact.name}
+                px={4}
+                py={3}
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+                sx={{
+                  transition: 'background-color 0.3s ease',
+                  '&:hover': { backgroundColor: 'rgba(211, 237, 79, 0.05)' }
+                }}
+              >
+                <Box>
+                  <Typography fontWeight="600" fontSize="1.1rem" color={theme.palette.blueGrey}>
+                    {contact.name}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {contact.phone}
+                  </Typography>
+                </Box>
+                <Stack direction="row" spacing={1}>
+                  <IconButton sx={{color: theme.palette.primary.light
+        }} onClick={() => handleOpen(contact)}>
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton color="error" onClick={() => openDeleteConfirmation(contact.name)}>
+                    <DeleteIcon />
+                  </IconButton>
+                </Stack>
+              </Box>
+            ))
+          )}
+        </Stack>
+      </Paper>
+
+      {/* Add New Button */}
       <Fab
+        onClick={() => handleOpen()}
         sx={{
           position: 'fixed',
-          bottom: 30,
-          right: 30,
-          bgcolor: colors.finder_dark,
-          color: colors.light,
-          '&:hover': { bgcolor: '#c0392b' }
+          bottom: 60,
+          right: 100,
+            backgroundColor: theme.palette.primary.light, // Correctly setting the background color
+            '&:hover': {
+              backgroundColor: theme.palette.primary.main, // Optional: add hover effect
+            },
         }}
-        aria-label="add"
-        onClick={() => handleOpen()}
       >
         <AddIcon />
       </Fab>
 
-      {/* Add/Edit Modal */}
+      {/* Modal for Adding/Editing Contact */}
       <Modal open={open} onClose={handleClose}>
         <Box sx={modalStyle}>
-          <Typography variant="h6">
-            {editMode ? 'Edit Contact' : 'Add New Contact'}
+          <Typography variant="h6" fontWeight="600">
+            {editMode ? 'Edit Contact' : 'Add Contact'}
           </Typography>
+
           <TextField
             label="Name"
-            variant="outlined"
             fullWidth
+            variant="outlined"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            sx={{
+              '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                borderColor: theme.palette.primary.main,
+              }
+            }}
           />
           <TextField
             label="Phone Number"
-            variant="outlined"
             fullWidth
-            type="text"
+            variant="outlined"
             value={phone}
             onChange={(e) => {
               setPhone(e.target.value);
@@ -268,35 +298,59 @@ export default function ContactsPage() {
             }}
             error={!!phoneError}
             helperText={phoneError}
+            sx={{
+              '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                borderColor: theme.palette.primary.main,
+              }
+            }}
           />
+
           <Stack direction="row" spacing={2} justifyContent="flex-end">
-            <Button variant="outlined" onClick={handleClose}>
+            <Button
+              variant="outlined"
+              onClick={handleClose}
+              sx={{ borderColor: theme.palette.primary.main, color: theme.palette.primary.main }}
+            >
               Cancel
             </Button>
-            <Button variant="contained" sx={{ bgcolor: colors.dark }} onClick={saveContact}>
-              {editMode ? 'Update' : 'Add'}
+            <Button
+              variant="contained"
+              onClick={saveContact}
+              sx={{ backgroundColor: theme.palette.primary.light, // Correctly setting the background color
+                '&:hover': {
+                  backgroundColor: theme.palette.primary.main, // Optional: add hover effect
+                }, }}
+            >
+              {editMode ? 'Save' : 'Add'}
             </Button>
           </Stack>
         </Box>
       </Modal>
 
-      {/* Delete Modal */}
-      <Modal open={deleteConfirmOpen} onClose={handleClose}>
+      {/* Delete Confirmation Modal */}
+      <Modal
+        open={deleteConfirmOpen}
+        onClose={handleClose}
+        aria-labelledby="delete-modal-title"
+      >
         <Box sx={modalStyle}>
-          <Typography variant="h6">Delete Contact</Typography>
+        <Typography variant="h6" fontWeight="600">
+            Delete Contact
+          </Typography>
           <Typography variant="body1">
             Are you sure you want to delete this contact? This action cannot be undone.
           </Typography>
-          <Stack direction="row" spacing={2} justifyContent="flex-end">
-            <Button variant="outlined" onClick={handleClose}>
+          <Stack direction="row" spacing={2} justifyContent="flex-end" mt={2}>
+            <Button variant="outlined" onClick={handleClose} sx={{ borderColor: theme.palette.primary.main, color: theme.palette.primary.main }}>
               Cancel
             </Button>
-            <Button variant="contained" sx={{ bgcolor: colors.finder_dark }} onClick={deleteContact}>
+            <Button variant="contained" color="error" onClick={deleteContact}>
               Delete
             </Button>
           </Stack>
         </Box>
       </Modal>
     </Container>
+    </>
   );
 }
