@@ -269,22 +269,19 @@ export default function ContactsPage() {
                 overflow: "hidden"
               }}
             >
-              
-              
-              <Box sx={{ position: "relative", zIndex: 2 }}>
-                <Box display="flex" alignItems="center" gap={2}>
-                  <ContactsIcon fontSize="large" />
-                  <Typography variant="h5" fontWeight="bold">
-                    Important Contacts
-                  </Typography>
-                </Box>
-                <Typography variant="body2" sx={{ mt: 1, opacity: 0.9 }}>
-                  Select contacts to add to your phone
+              <Box display="flex" alignItems="center" gap={2}>
+                <ContactsIcon fontSize="large" />
+                <Typography variant="h5" fontWeight="bold">
+                  Important Contacts
                 </Typography>
               </Box>
+              <Typography variant="body2" sx={{ mt: 1, opacity: 0.9 }}>
+                Select contacts to add to your phone
+              </Typography>
             </Box>
-            {/* Scrollable Contacts */}
-            <Box sx={{ overflowY: "auto", maxHeight: "400px" }}>
+
+            {/* Scrollable Contacts List */}
+            <Box sx={{ maxHeight: "400px", overflowY: "auto" }}>
               <List sx={{ p: 2 }}>
                 {contacts.map((contact) => (
                   <Box key={contact.id}>
