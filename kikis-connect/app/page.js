@@ -101,11 +101,12 @@ export default function ContactsPage() {
   })
   const [helpOpen, setHelpOpen] = useState(false)
 
+  
   // Get a random color for each contact's avatar
   const getAvatarColor = (name) => {
     return teal[600]
   }
-
+  
   // Get initials from name
   const getInitials = (name) => {
     const exclude = ['of', 'the']
@@ -117,7 +118,8 @@ export default function ContactsPage() {
       .toUpperCase()
       .substring(0, 2)
   }
-
+  
+  
   // Fetch contacts from Firebase when component mounts
   useEffect(() => {
     setHelpOpen(true);
@@ -164,13 +166,13 @@ export default function ContactsPage() {
     
     fetchContacts()
   }, [])
-
+  
   const handleCheckboxChange = (id) => {
     setContacts(contacts.map((contact) => (
       contact.id === id ? { ...contact, checked: !contact.checked } : contact
     )))
   }
-
+  
   // Handle adding to phone contacts
   const addToPhoneContacts = async (selectedContacts) => {
     if (!selectedContacts || selectedContacts.length === 0) {
@@ -182,8 +184,8 @@ export default function ContactsPage() {
       return
     }
 
-    // Try using Contacts API (not yet supported for writing on most browsers)
-    if ("contacts" in navigator && "ContactsManager" in window) {
+     // Try using Contacts API (not yet supported for writing on most browsers)
+     if ("contacts" in navigator && "ContactsManager" in window) {
       try {
         const props = ["name", "tel"]
         await navigator.contacts.select(props)  // mostly for reading
@@ -202,8 +204,8 @@ export default function ContactsPage() {
       }
     }
 
-    // Fallback: Generate a single vCard with all selected contacts
-    const vCards = selectedContacts.map((contact) => {
+     // Fallback: Generate a single vCard with all selected contacts
+     const vCards = selectedContacts.map((contact) => {
       return [
         "BEGIN:VCARD",
         "VERSION:3.0",
@@ -213,7 +215,8 @@ export default function ContactsPage() {
         "END:VCARD"
       ].join("\r\n");
     }).join("\r\n");
-
+    
+  
     const blob = new Blob([vCards], { type: "text/vcard" })
     const url = URL.createObjectURL(blob)
     const link = document.createElement("a")
@@ -223,12 +226,12 @@ export default function ContactsPage() {
     link.click()
     document.body.removeChild(link)
   }
-
+  
   // Close snackbar
   const handleCloseSnackbar = () => {
     setSnackbar({ ...snackbar, open: false })
   }
-
+  
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -269,72 +272,169 @@ export default function ContactsPage() {
                 overflow: "hidden"
               }}
             >
-              <Box display="flex" alignItems="center" gap={2}>
-                <ContactsIcon fontSize="large" />
-                <Typography variant="h5" fontWeight="bold">
-                  Important Contacts
+              
+              
+              <Box sx={{ position: "relative", zIndex: 2 }}>
+                <Box display="flex" alignItems="center" gap={2}>
+                  <ContactsIcon fontSize="large" />
+                  <Typography variant="h5" fontWeight="bold">
+                    Important Contacts
+                  </Typography>
+                </Box>
+                <Typography variant="body2" sx={{ mt: 1, opacity: 0.9 }}>
+                  Select contacts to add to your phone
                 </Typography>
               </Box>
-              <Typography variant="body2" sx={{ mt: 1, opacity: 0.9 }}>
-                Select contacts to add to your phone
-              </Typography>
             </Box>
-
-            {/* Scrollable Contacts List */}
-            <Box sx={{ maxHeight: "400px", overflowY: "auto" }}>
-              <List sx={{ p: 2 }}>
-                {contacts.map((contact) => (
-                  <Box key={contact.id}>
-                    <ListItem 
-                      secondaryAction={
-                        <Checkbox
-                          edge="end"
-                          checked={contact.checked}
-                          onChange={() => handleCheckboxChange(contact.id)}
-                        />
-                      }
-                    >
-                      <ListItemIcon>
-                        <Avatar sx={{ bgcolor: getAvatarColor(contact.name) }}>
+            
+            {/* Contacts List */}
+            <CardContent sx={{ px: 0 }}>
+              {contacts.length === 0 ? (
+                <Box 
+                  sx={{ 
+                    py: 6, 
+                    display: "flex", 
+                    flexDirection: "column", 
+                    alignItems: "center",
+                    gap: 2
+                  }}
+                >
+                  <ContactIcon fontSize="large" color="disabled" />
+                  <Typography color="text.secondary">
+                    No contacts available
+                  </Typography>
+                </Box>
+              ) : (
+                <List sx={{ width: '100%' }}>
+                  {contacts.map((contact) => (
+                    <Box key={contact.id}>
+                      <ListItem 
+                        button 
+                        onClick={() => handleCheckboxChange(contact.id)}
+                        sx={{ 
+                          py: 2,
+                          px: 3,
+                          transition: "all 0.2s",
+                          "&:hover": { 
+                            bgcolor: contact.checked ? 'rgba(103, 58, 183, 0.05)' : 'rgba(0, 0, 0, 0.02)' 
+                          },
+                          bgcolor: contact.checked ? 'rgba(103, 58, 183, 0.02)' : 'transparent'
+                        }}
+                      >
+                        <ListItemIcon>
+                          <Checkbox 
+                            edge="start" 
+                            checked={contact.checked} 
+                            sx={{ 
+                              '& .MuiSvgIcon-root': { 
+                                fontSize: 24,
+                                color: contact.checked ? blueGrey[700] : undefined
+                              } 
+                            }}
+                          />
+                        </ListItemIcon>
+                        
+                        <Avatar 
+                          sx={{ 
+                            bgcolor: getAvatarColor(contact.name),
+                            mr: 2,
+                            width: 40,
+                            height: 40,
+                            fontSize: '1rem',
+                            fontWeight: 'bold'
+                          }}
+                        >
                           {getInitials(contact.name)}
                         </Avatar>
-                      </ListItemIcon>
-                      <ListItemText 
-                        primary={contact.name} 
-                        secondary={contact.phone}
-                      />
-                    </ListItem>
-                    <Divider />
-                  </Box>
-                ))}
-              </List>
-            </Box>
-
-            {/* Add Contacts Button */}
-            <Box sx={{ p: 3 }}>
+                        
+                        <ListItemText 
+                          primary={
+                            <Typography 
+                              variant="body1" 
+                              sx={{ 
+                                fontWeight: contact.checked ? 600 : 500,
+                                color: contact.checked ? blueGrey[900] : 'text.primary'
+                              }}
+                            >
+                              {contact.name}
+                            </Typography>
+                          } 
+                          secondary={
+                            <Box display="flex" alignItems="center" gap={0.5}>
+                              <Typography variant="body2" color="text.secondary">
+                                {contact.phone}
+                              </Typography>
+                            </Box>
+                          } 
+                        />
+                      </ListItem>
+                      <Divider variant="inset" component="li" />
+                    </Box>
+                  ))}
+                </List>
+              )}
+            </CardContent>
+            
+            {/* Action Footer */}
+            <Box sx={{ px: 3, mt: 2 }}>
               <Button
-                onClick={() => addToPhoneContacts(contacts.filter((contact) => contact.checked))}
                 variant="contained"
                 fullWidth
-                endIcon={<AddCircleIcon />}
+                onClick={() => addToPhoneContacts(contacts.filter(c => c.checked))}
+                sx={{ 
+                  py: 1.5,
+                  boxShadow: "0 4px 10px rgba(103, 58, 183, 0.2)",
+                  position: "relative",
+                  overflow: "hidden",
+                  "&::after": {
+                    content: '""',
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",
+                    background: "linear-gradient(90deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 50%, rgba(255,255,255,0.1) 100%)",
+                  },
+                }}
               >
-                Add Selected Contacts
+                Add to Phone Contacts
               </Button>
+              
+              <Box 
+                sx={{ 
+                  display: "flex", 
+                  alignItems: "center", 
+                  justifyContent: "center", 
+                  mt: 2, 
+                  gap: 0.5
+                }}
+              >
+                <InfoIcon fontSize="small" color="disabled" sx={{ fontSize: 16 }} />
+                <Typography variant="caption" color="text.secondary">
+                  Selected contacts will be added to your device
+                </Typography>
+              </Box>
             </Box>
           </Card>
         </Container>
       </Box>
-
-      {/* Snackbar */}
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={3000}
+      
+      {/* Notification Snackbar */}
+      <Snackbar 
+        open={snackbar.open} 
+        autoHideDuration={6000} 
         onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
         <Alert 
-          onClose={handleCloseSnackbar}
+          onClose={handleCloseSnackbar} 
           severity={snackbar.severity}
-          sx={{ width: "100%" }}
+          variant="filled"
+          sx={{ 
+            width: '100%', 
+            borderRadius: 2,
+            alignItems: 'center'
+          }}
         >
           {snackbar.message}
         </Alert>
