@@ -22,7 +22,6 @@ import Dialog from '@mui/material/Dialog'
 // Import Firebase
 import { firestore } from "../firebase"
 import { collection, getDocs, query } from "firebase/firestore"
-import { Bold } from "lucide-react"
 
 // Create a custom theme
 const theme = createTheme({
@@ -303,12 +302,6 @@ export default function ContactsPage() {
                       <ListItemText 
                         primary={contact.name} 
                         secondary={contact.phone}
-                        sx={{ 
-                          '& .MuiTypography-root': {
-                            fontSize: '1.2rem', // Adjust the font size as needed
-                            fontWeight: 'bold', // Make the name bold
-                          }
-                        }}
                       />
                     </ListItem>
                     <Divider />
